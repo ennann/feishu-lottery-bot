@@ -25,10 +25,18 @@ const getFeishuConfig = async () => {
  * Vercel Serverless Function 处理器
  */
 module.exports = async (req, res) => {
-    const logger = createLogger({ requestId: req.headers['x-request-id'] });
+    const requestId = req.headers['x-request-id'] || `req_${Date.now()}`;
+    const logger = createLogger({ requestId });
+
+    logger.info('');
+    logger.info('>>> 收到新请求 <<<');
+    logger.info(`请求ID: ${requestId}`);
+    logger.info(`请求方法: ${req.method}`);
+    logger.info(`请求路径: ${req.url}`);
 
     // 只允许 POST 请求
     if (req.method !== 'POST') {
+        logger.warn('请求方法不允许，仅支持 POST');
         return res.status(405).json({
             code: -1,
             message: 'Method Not Allowed'
@@ -38,7 +46,8 @@ module.exports = async (req, res) => {
     try {
         // 处理 URL 验证（飞书开放平台配置时）
         if (req.body?.type === 'url_verification') {
-            logger.info('收到 URL 验证请求');
+            logger.info('>>> 处理 URL 验证请求');
+            logger.info(`Challenge: ${req.body.challenge}`);
             return res.status(200).json({
                 challenge: req.body.challenge
             });
@@ -46,19 +55,35 @@ module.exports = async (req, res) => {
 
         // 处理飞书事件回调
         const eventType = req.body?.event?.header?.event_type;
+        const eventId = req.body?.event?.header?.event_id;
+        const appId = req.body?.event?.header?.app_id;
 
         if (!eventType) {
-            logger.warn('未知的请求格式', JSON.stringify(req.body));
+            logger.warn('未知的请求格式，缺少 event_type');
+            logger.warn('请求体:', JSON.stringify(req.body, null, 2));
             return res.status(200).json({
                 code: 0,
                 message: '未知的请求格式'
             });
         }
 
-        logger.info(`收到事件回调: ${eventType}`, JSON.stringify(req.body));
+        logger.info('>>> 收到飞书事件回调');
+        logger.info(`事件类型: ${eventType}`);
+        logger.info(`事件ID: ${eventId}`);
+        logger.info(`应用ID: ${appId}`);
 
         // 只处理消息接收事件
         if (eventType === 'im.message.receive_v1') {
+            const message = req.body?.event?.event?.message;
+            const sender = req.body?.event?.event?.sender;
+
+            logger.info('>>> 处理消息接收事件');
+            logger.info(`消息ID: ${message?.message_id}`);
+            logger.info(`会话ID: ${message?.chat_id}`);
+            logger.info(`根消息ID: ${message?.root_id || '(无)'}`);
+            logger.info(`发送者: ${sender?.sender_id?.open_id}`);
+            logger.info(`消息内容: ${message?.content}`);
+
             // 初始化依赖（Vercel 环境使用内存 Redis）
             const redis = new InMemoryRedis();
             const client = await initLarkClient(getFeishuConfig);
