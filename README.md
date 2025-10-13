@@ -88,7 +88,18 @@ npm run deploy
 | `FEISHU_APP_ID` | 飞书应用 ID | `cli_xxxxxxxxxx` |
 | `FEISHU_APP_SECRET` | 飞书应用密钥 | `xxxxxxxxxx` |
 
-#### 4. 部署
+#### 4. 配置 Vercel KV（持久化存储）
+为了防止重复开奖，需要配置持久化存储：
+
+1. 在 Vercel 项目页面，点击 "Storage" 标签
+2. 点击 "Create Database" → 选择 "KV"
+3. 填写数据库名称（如 `feishu-lottery-kv`）
+4. 点击 "Create"
+5. Vercel 会自动添加环境变量 `KV_REST_API_URL` 和 `KV_REST_API_TOKEN`
+
+**注意**：如果不配置 KV，系统会自动降级使用内存存储，但每次部署后抽奖记录会丢失。
+
+#### 5. 部署
 点击 "Deploy" 按钮开始部署。
 
 ## 🔧 本地开发
@@ -265,9 +276,27 @@ vercel logs --follow
 - ✅ 全球 CDN 加速
 - ✅ 零运维成本
 
+## 💾 持久化存储
+
+### Vercel KV（推荐）
+
+项目默认集成 Vercel KV 进行持久化存储，用于记录开奖信息防止重复开奖。
+
+**免费额度**：
+- 存储空间：256 MB
+- 请求次数：100,000 次/月
+- 足够小型应用使用
+
+**存储的数据**：
+- 抽奖记录 Key: `lottery:drawn:{root_message_id}`
+- 记录内容：中奖用户 ID、抽奖时间、参与人数
+
+**自动降级**：
+如果未配置 Vercel KV，系统会自动使用内存存储（数据不持久化），但不影响基本功能。
+
 ## 📝 注意事项
 
-1. **Redis 限制**: 当前使用内存存储，每次冷启动会重置。生产环境建议使用 Vercel KV 或外部 Redis
+1. **持久化存储**: 强烈建议配置 Vercel KV 以持久化抽奖记录，否则每次部署后数据会丢失
 2. **冷启动**: Serverless Functions 可能存在冷启动延迟（首次请求较慢）
 3. **超时限制**: Vercel 免费版函数超时时间为 10 秒，Pro 版为 60 秒
 4. **并发限制**: 注意 Vercel 的并发请求限制

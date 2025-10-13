@@ -9,7 +9,8 @@
  * 2. 消息事件处理
  */
 
-const { lotteryDrawHandler, initLarkClient, createLogger, InMemoryRedis } = require('../lib/lottery-core');
+const { lotteryDrawHandler, initLarkClient, createLogger } = require('../lib/lottery-core');
+const { createRedis } = require('../lib/kv-redis');
 
 /**
  * 获取飞书应用配置的函数
@@ -28,7 +29,6 @@ module.exports = async (req, res) => {
     const requestId = req.headers['x-request-id'] || `req_${Date.now()}`;
     const logger = createLogger({ requestId });
 
-    logger.info('');
     logger.info('>>> 收到新请求 <<<');
     logger.info(`请求ID: ${requestId}`);
     logger.info(`请求方法: ${req.method}`);
@@ -88,8 +88,8 @@ module.exports = async (req, res) => {
             logger.info(`发送者: ${sender?.sender_id?.open_id}`);
             logger.info(`消息内容: ${message?.content}`);
 
-            // 初始化依赖（Vercel 环境使用内存 Redis）
-            const redis = new InMemoryRedis();
+            // 初始化依赖（使用 Vercel KV 持久化存储）
+            const redis = await createRedis();
             const client = await initLarkClient(getFeishuConfig);
 
             const dependencies = {
