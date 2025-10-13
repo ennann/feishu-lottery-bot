@@ -1,4 +1,6 @@
 {
+  "buildCommand": "echo 'No build required'",
+  "outputDirectory": null,
   "rewrites": [
     {
       "source": "/",
