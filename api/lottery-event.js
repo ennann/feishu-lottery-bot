@@ -12,12 +12,12 @@
 const { lotteryDrawHandler, initLarkClient, createLogger, InMemoryRedis } = require('../lib/lottery-core');
 
 /**
- * 获取飞书 Token 的函数
+ * 获取飞书应用配置的函数
  */
-const getFeishuToken = async () => {
+const getFeishuConfig = async () => {
     return {
         appId: process.env.FEISHU_APP_ID || '',
-        tenantAccessToken: process.env.FEISHU_TENANT_ACCESS_TOKEN || ''
+        appSecret: process.env.FEISHU_APP_SECRET || ''
     };
 };
 
@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
 
             // 初始化依赖（Vercel 环境使用内存 Redis）
             const redis = new InMemoryRedis();
-            const client = await initLarkClient(getFeishuToken);
+            const client = await initLarkClient(getFeishuConfig);
 
             const dependencies = {
                 client,
@@ -63,7 +63,7 @@ module.exports = async (req, res) => {
             // 执行抽奖逻辑
             const result = await lotteryDrawHandler(
                 { event: req.body },
-                { getTokenFn: getFeishuToken, redis },
+                { getTokenFn: getFeishuConfig, redis },
                 dependencies
             );
 

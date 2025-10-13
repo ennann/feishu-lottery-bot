@@ -56,7 +56,6 @@ npm install
 ```env
 FEISHU_APP_ID=cli_xxxxxxxxxx
 FEISHU_APP_SECRET=xxxxxxxxxx
-FEISHU_TENANT_ACCESS_TOKEN=t-xxxxxxxxxx
 ```
 
 #### 6. 部署到 Vercel
@@ -88,7 +87,6 @@ npm run deploy
 |--------|------|------|
 | `FEISHU_APP_ID` | 飞书应用 ID | `cli_xxxxxxxxxx` |
 | `FEISHU_APP_SECRET` | 飞书应用密钥 | `xxxxxxxxxx` |
-| `FEISHU_TENANT_ACCESS_TOKEN` | 飞书租户访问令牌 | `t-xxxxxxxxxx` |
 
 #### 4. 部署
 点击 "Deploy" 按钮开始部署。
@@ -219,19 +217,10 @@ Content-Type: application/json
 
 | 变量名 | 必填 | 说明 |
 |--------|------|------|
-| `FEISHU_APP_ID` | ✅ | 飞书应用的 App ID |
-| `FEISHU_APP_SECRET` | ❌ | 飞书应用的 App Secret（可选） |
-| `FEISHU_TENANT_ACCESS_TOKEN` | ✅ | 飞书租户访问令牌 |
+| `FEISHU_APP_ID` | ✅ | 飞书应用的 App ID，从飞书开放平台获取 |
+| `FEISHU_APP_SECRET` | ✅ | 飞书应用的 App Secret，从飞书开放平台获取 |
 
-### 获取 Tenant Access Token
-```bash
-curl -X POST https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal \
-  -H "Content-Type: application/json" \
-  -d '{
-    "app_id": "cli_xxx",
-    "app_secret": "xxx"
-  }'
-```
+**注意**：SDK 会自动使用 App ID 和 App Secret 获取和管理 tenant_access_token，无需手动配置。
 
 ## 📊 监控与日志
 
