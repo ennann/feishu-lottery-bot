@@ -1,0 +1,28 @@
+# Vercel 忽略文件
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+
+# System
+.DS_Store
+Thumbs.db
+
+# 旧版本文件（不需要部署）
+lottery.js
+
+# 开发文件
+*.local.js
+test/
