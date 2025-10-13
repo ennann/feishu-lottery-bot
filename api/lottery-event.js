@@ -36,20 +36,29 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const eventType = req.body?.type;
-
-        // 处理 URL 验证
-        if (eventType === 'url_verification') {
+        // 处理 URL 验证（飞书开放平台配置时）
+        if (req.body?.type === 'url_verification') {
             logger.info('收到 URL 验证请求');
             return res.status(200).json({
                 challenge: req.body.challenge
             });
         }
 
-        // 处理事件回调
-        if (eventType === 'event_callback') {
-            logger.info('收到事件回调', JSON.stringify(req.body));
+        // 处理飞书事件回调
+        const eventType = req.body?.event?.header?.event_type;
 
+        if (!eventType) {
+            logger.warn('未知的请求格式', JSON.stringify(req.body));
+            return res.status(200).json({
+                code: 0,
+                message: '未知的请求格式'
+            });
+        }
+
+        logger.info(`收到事件回调: ${eventType}`, JSON.stringify(req.body));
+
+        // 只处理消息接收事件
+        if (eventType === 'im.message.receive_v1') {
             // 初始化依赖（Vercel 环境使用内存 Redis）
             const redis = new InMemoryRedis();
             const client = await initLarkClient(getFeishuConfig);
@@ -62,7 +71,7 @@ module.exports = async (req, res) => {
 
             // 执行抽奖逻辑
             const result = await lotteryDrawHandler(
-                { event: req.body },
+                req.body,
                 { getTokenFn: getFeishuConfig, redis },
                 dependencies
             );
@@ -70,11 +79,11 @@ module.exports = async (req, res) => {
             return res.status(200).json(result);
         }
 
-        // 未知事件类型
-        logger.warn('未知的事件类型', eventType);
+        // 其他事件类型暂不处理
+        logger.info(`事件类型 ${eventType} 暂不处理`);
         return res.status(200).json({
             code: 0,
-            message: '事件类型未处理'
+            message: '事件已接收'
         });
 
     } catch (error) {
