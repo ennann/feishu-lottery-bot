@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
                 description: '飞书事件回调（生产环境）'
             }
         },
-        documentation: 'https://github.com/your-repo/lottery-assistant',
+        documentation: 'https://github.com/ennann/feishu-lottery',
         timestamp: new Date().toISOString()
     });
 };
