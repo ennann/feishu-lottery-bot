@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>抽奖助手机器人 · 即刻拥有 @Tim 同款</title>
+  <meta name="description" content="基于飞书开放平台与 aPaaS 的智能抽奖机器人：点赞参与，一句“开奖”即抽奖。自动去重、公平随机、防重复开奖、群内即时通知，轻量高效，适合公司群活动与直播互动。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <!-- 背景粒子层 -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <!-- 顶部导航（简洁） -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="logo-dot"></span>
+        <span class="brand-text">抽奖助手机器人</span>
+      </div>
+      <nav class="nav">
+        <a href="#features">特性</a>
+        <a href="#how-it-works">使用方法</a>
+        <a href="#cta" class="btn btn-small">申请使用</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 英雄区 -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-gradient"></div>
+    <div class="container hero-inner glass">
+      <div class="hero-content">
+        <h1>即刻拥有 <span class="highlight">@Tim</span> 同款抽奖机器人</h1>
+        <p class="sub">点赞参与，一句「<strong>开奖</strong>」即抽奖。基于飞书开放平台与 aPaaS，轻量高效，适合群活动、直播互动与企业内福利抽奖。</p>
+        <div class="hero-ctas">
+          <a id="applyBtn" href="#cta" class="btn btn-primary">申请使用</a>
+          <a href="#how-it-works" class="btn btn-ghost">查看使用方法</a>
+          <button id="copyBtn" class="btn btn-copy" aria-label="复制开奖指令">复制「开奖」</button>
+        </div>
+        <div class="credibility">
+          <span class="badge">影视飓风 @Tim 同款 · 罗永浩《十字路口》访谈提及</span>
+        </div>
+      </div>
+      <div class="hero-art">
+        <img id="heroImg" src="./hero.jpg" alt="智能抽奖机器人主题英雄图" />
+        <div class="glow"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 特性 -->
+  <section class="section" id="features">
+    <div class="container">
+      <h2>为什么选它</h2>
+      <p class="section-sub">为群互动而生的轻量级抽奖方案，自动统计、即时开奖、零学习成本。</p>
+
+      <div class="features-grid">
+        <div class="feature-card glass">
+          <div class="icon">
+            <!-- 收集参与者 -->
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4Z"/><path d="M6 20a6 6 0 0 1 12 0"/></svg>
+          </div>
+          <h3>自动收集参与者</h3>
+          <p>基于飞书消息点赞反应（Reaction）自动统计参与用户，无需表单报名。</p>
+        </div>
+        <div class="feature-card glass">
+          <div class="icon">
+            <!-- 智能去重 -->
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M9 11l3 3 7-7"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+          </div>
+          <h3>智能去重</h3>
+          <p>自动过滤不同表情的重复参与者，确保每位用户只计一次。</p>
+        </div>
+        <div class="feature-card glass">
+          <div class="icon">
+            <!-- 公平随机 -->
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <h3>公平随机</h3>
+          <p>采用随机算法选择中奖者，公平透明，可复核记录。</p>
+        </div>
+        <div class="feature-card glass">
+          <div class="icon">
+            <!-- 防重复开奖 -->
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 12a9 9 0 1 1-9-9"/><path d="M3 3l6 6"/></svg>
+          </div>
+          <h3>防重复开奖</h3>
+          <p>同一条消息仅允许开奖一次，避免重复抽奖与争议。</p>
+        </div>
+        <div class="feature-card glass">
+          <div class="icon">
+            <!-- 即时通知 -->
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 22c1.1 0 2-.9 2-2H10c0 1.1.9 2 2 2Z"/><path d="M18 16v-5a6 6 0 0 0-12 0v5"/><path d="M5 16h14"/></svg>
+          </div>
+          <h3>群内即时通知</h3>
+          <p>开奖后自动在群聊@中奖用户，结果当场可见，提升参与氛围。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 使用方法 -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <h2>如何使用</h2>
+      <div class="steps">
+        <div class="step glass">
+          <div class="step-index">01</div>
+          <div class="step-content">
+            <h4>点赞参与</h4>
+            <p>在抽奖活动消息下，点击点赞等表情参与。机器人会自动收集参与名单。</p>
+          </div>
+        </div>
+        <div class="step glass">
+          <div class="step-index">02</div>
+          <div class="step-content">
+            <h4>回复并发送「开奖」</h4>
+            <p>必须回复机器人，并发送「开奖」两个字触发抽奖；同一消息仅识别第一次触发。</p>
+          </div>
+        </div>
+        <div class="step glass">
+          <div class="step-index">03</div>
+          <div class="step-content">
+            <h4>即时开奖与公告</h4>
+            <p>机器人公平随机抽取中奖者，并在群内自动公告与@提醒。</p>
+          </div>
+        </div>
+      </div>
+      <div class="tip glass">
+        <strong>提示：</strong>如果没有回复任何消息，将不会响应；如提示无权限，可在内部申请开通。
+      </div>
+    </div>
+  </section>
+
+  <!-- 底部 CTA -->
+  <section class="cta-section" id="cta">
+    <div class="container cta-inner glass">
+      <div class="cta-text">
+        <h3>准备把抽奖变得又快又好玩吗？</h3>
+        <p>现在就把抽奖助手机器人接入你的飞书群聊，轻松组织福利抽奖与互动活动。</p>
+      </div>
+      <div class="cta-actions">
+        <a href="#how-it-works" class="btn btn-primary">查看使用方法</a>
+        <button id="copyBtn2" class="btn btn-ghost">复制「开奖」</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="brand">
+            <span class="logo-dot"></span>
+            <span class="brand-text">抽奖助手机器人</span>
+          </div>
+          <p class="footnote">基于飞书开放平台与 aPaaS · 企业内群抽奖轻量方案</p>
+        </div>
+        <div class="footer-links">
+          <a href="#features">特性</a>
+          <a href="#how-it-works">使用方法</a>
+          <a href="#hero">回到顶部</a>
+        </div>
+      </div>
+      <div class="legal">© 2025 抽奖助手机器人 · 保留所有权利</div>
+    </div>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>

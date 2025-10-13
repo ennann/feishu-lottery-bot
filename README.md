@@ -18,7 +18,7 @@
 ```
 .
 ├── api/                          # Vercel Serverless Functions
-│   ├── index.js                  # 主页 API
+│   ├── index.js                  # API 信息页面
 │   ├── ping.js                   # 健康检查
 │   ├── lottery-event.js          # 飞书事件回调
 │   └── lottery-stats.js          # 抽奖数据统计查询 ⭐
@@ -27,6 +27,11 @@
 │   ├── storage-neon.js           # Neon Postgres 存储适配器 ⭐
 │   ├── kv-redis.js               # Vercel KV 存储适配器（已弃用）
 │   └── db-schema.sql             # 数据库表结构定义 ⭐
+├── public/                       # 静态网页文件 ⭐
+│   ├── index.html                # 主页
+│   ├── styles.css                # 样式
+│   ├── script.js                 # 脚本
+│   └── hero.jpg                  # 图片资源
 ├── package.json                  # 依赖配置
 ├── vercel.json                   # Vercel 配置
 └── README.md                     # 说明文档
@@ -124,16 +129,28 @@ npm run dev
 ```
 
 ### 3. 访问端点
-- 主页: http://localhost:3000/api
+- 静态主页: http://localhost:3000/
+- API 信息: http://localhost:3000/api
 - 健康检查: http://localhost:3000/api/ping
 - 事件回调: http://localhost:3000/api/lottery-event
 
+## 🌐 访问说明
+
+### 主页（静态网页）
+```
+访问: https://lottery.humanzoo.us 或 /
+```
+展示项目介绍、功能说明和使用指南的静态网页。
+
+### API 端点
+所有 API 端点都在 `/api` 路径下。
+
 ## 📡 API 端点
 
-### 1. 主页信息
+### 1. API 信息
 **请求**
 ```
-GET /api 或 GET /
+GET /api 或 GET /api/index
 ```
 
 **响应**
