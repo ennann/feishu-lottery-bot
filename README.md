@@ -212,6 +212,8 @@ GET /api/lottery-stats?action=list&limit=50&offset=0
         "winner_id": "ou_xxx",
         "participant_count": 15,
         "chat_id": "oc_xxx",
+        "sender_id": "ou_yyy",
+        "lottery_message_id": "om_zzz",
         "created_at": "2025-10-13T10:30:00.000Z"
       }
     ],
@@ -354,7 +356,14 @@ vercel logs --follow
 
 **存储的数据**：
 - 抽奖记录表 `lottery_draws`
-- 字段：根消息 ID、中奖用户 ID、参与人数、群聊 ID、抽奖时间等
+- 字段：
+  - `root_message_id`: 原消息ID（用于防重）
+  - `winner_id`: 中奖用户OpenID
+  - `participant_count`: 参与人数
+  - `chat_id`: 群聊ID
+  - `sender_id`: 触发开奖的用户OpenID
+  - `lottery_message_id`: 中奖通知消息ID
+  - `created_at`: 抽奖时间
 
 **数据分析功能**：
 - 查询所有抽奖记录（支持分页）

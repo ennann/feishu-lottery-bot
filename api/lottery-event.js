@@ -60,6 +60,7 @@ module.exports = async (req, res) => {
         const eventType = req.body?.header?.event_type || req.body?.event?.header?.event_type;
         const eventId = req.body?.header?.event_id || req.body?.event?.header?.event_id;
         const appId = req.body?.header?.app_id || req.body?.event?.header?.app_id;
+        
 
         if (!eventType) {
             logger.warn('未知的请求格式，缺少 event_type');
