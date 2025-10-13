@@ -54,9 +54,12 @@ module.exports = async (req, res) => {
         }
 
         // 处理飞书事件回调
-        const eventType = req.body?.event?.header?.event_type;
-        const eventId = req.body?.event?.header?.event_id;
-        const appId = req.body?.event?.header?.app_id;
+        // 飞书有两种请求格式：
+        // 1. 新格式: { schema: "2.0", header: {...}, event: {...} }
+        // 2. 旧格式: { event: { header: {...}, event: {...} } }
+        const eventType = req.body?.header?.event_type || req.body?.event?.header?.event_type;
+        const eventId = req.body?.header?.event_id || req.body?.event?.header?.event_id;
+        const appId = req.body?.header?.app_id || req.body?.event?.header?.app_id;
 
         if (!eventType) {
             logger.warn('未知的请求格式，缺少 event_type');
@@ -74,8 +77,9 @@ module.exports = async (req, res) => {
 
         // 只处理消息接收事件
         if (eventType === 'im.message.receive_v1') {
-            const message = req.body?.event?.event?.message;
-            const sender = req.body?.event?.event?.sender;
+            // 兼容两种格式
+            const message = req.body?.event?.message || req.body?.event?.event?.message;
+            const sender = req.body?.event?.sender || req.body?.event?.event?.sender;
 
             logger.info('>>> 处理消息接收事件');
             logger.info(`消息ID: ${message?.message_id}`);
