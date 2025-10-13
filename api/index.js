@@ -22,6 +22,16 @@ module.exports = async (req, res) => {
                 url: `${baseUrl}/api/lottery-event`,
                 method: 'POST',
                 description: '飞书事件回调（生产环境）'
+            },
+            lotteryStats: {
+                url: `${baseUrl}/api/lottery-stats`,
+                method: 'GET',
+                description: '抽奖数据统计查询',
+                examples: {
+                    list: `${baseUrl}/api/lottery-stats?action=list&limit=50&offset=0`,
+                    chat: `${baseUrl}/api/lottery-stats?action=chat&chatId=oc_xxx`,
+                    stats: `${baseUrl}/api/lottery-stats?action=stats`
+                }
             }
         },
         documentation: 'https://github.com/ennann/feishu-lottery',

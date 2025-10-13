@@ -10,7 +10,7 @@
  */
 
 const { lotteryDrawHandler, initLarkClient, createLogger } = require('../lib/lottery-core');
-const { createRedis } = require('../lib/kv-redis');
+const { createStorage } = require('../lib/storage-neon');
 
 /**
  * 获取飞书应用配置的函数
@@ -88,20 +88,20 @@ module.exports = async (req, res) => {
             logger.info(`发送者: ${sender?.sender_id?.open_id}`);
             logger.info(`消息内容: ${message?.content}`);
 
-            // 初始化依赖（使用 Vercel KV 持久化存储）
-            const redis = await createRedis();
+            // 初始化依赖（使用 Neon Postgres 持久化存储）
+            const storage = await createStorage();
             const client = await initLarkClient(getFeishuConfig);
 
             const dependencies = {
                 client,
-                redis,
+                redis: storage,  // 使用 redis 别名保持向后兼容
                 logger
             };
 
             // 执行抽奖逻辑
             const result = await lotteryDrawHandler(
                 req.body,
-                { getTokenFn: getFeishuConfig, redis },
+                { getTokenFn: getFeishuConfig, redis: storage },
                 dependencies
             );
 

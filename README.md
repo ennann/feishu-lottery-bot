@@ -11,6 +11,7 @@
 - 🔒 防止重复开奖
 - ⚡ Serverless 架构，按需运行
 - 🎨 函数式编程，易于测试和维护
+- 📊 Neon Postgres 持久化存储，支持数据查询和分析 ⭐
 
 ## 📁 项目结构
 
@@ -19,9 +20,13 @@
 ├── api/                          # Vercel Serverless Functions
 │   ├── index.js                  # 主页 API
 │   ├── ping.js                   # 健康检查
-│   └── lottery-event.js          # 飞书事件回调
+│   ├── lottery-event.js          # 飞书事件回调
+│   └── lottery-stats.js          # 抽奖数据统计查询 ⭐
 ├── lib/                          # 核心业务逻辑
-│   └── lottery-core.js           # 抽奖核心功能（函数式实现）
+│   ├── lottery-core.js           # 抽奖核心功能（函数式实现）
+│   ├── storage-neon.js           # Neon Postgres 存储适配器 ⭐
+│   ├── kv-redis.js               # Vercel KV 存储适配器（已弃用）
+│   └── db-schema.sql             # 数据库表结构定义 ⭐
 ├── package.json                  # 依赖配置
 ├── vercel.json                   # Vercel 配置
 └── README.md                     # 说明文档
@@ -88,16 +93,20 @@ npm run deploy
 | `FEISHU_APP_ID` | 飞书应用 ID | `cli_xxxxxxxxxx` |
 | `FEISHU_APP_SECRET` | 飞书应用密钥 | `xxxxxxxxxx` |
 
-#### 4. 配置 Vercel KV（持久化存储）
-为了防止重复开奖，需要配置持久化存储：
+#### 4. 配置 Neon Postgres（持久化存储）⭐
+为了防止重复开奖并支持数据分析，需要配置持久化存储：
 
 1. 在 Vercel 项目页面，点击 "Storage" 标签
-2. 点击 "Create Database" → 选择 "KV"
-3. 填写数据库名称（如 `feishu-lottery-kv`）
+2. 点击 "Create Database" → 选择 "Neon (Postgres)"
+3. 填写数据库名称（如 `feishu-lottery-db`）
 4. 点击 "Create"
-5. Vercel 会自动添加环境变量 `KV_REST_API_URL` 和 `KV_REST_API_TOKEN`
+5. Vercel 会自动添加环境变量：
+   - `DATABASE_URL` - Neon 数据库连接字符串
+   - `POSTGRES_URL`, `POSTGRES_PRISMA_URL` 等（可选）
 
-**注意**：如果不配置 KV，系统会自动降级使用内存存储，但每次部署后抽奖记录会丢失。
+**数据库表会自动创建**：首次运行时会自动创建 `lottery_draws` 表及索引。
+
+**注意**：如果不配置数据库，系统会自动降级使用内存存储，但每次部署后抽奖记录会丢失，且无法使用数据统计功能。
 
 #### 5. 部署
 点击 "Deploy" 按钮开始部署。
@@ -183,6 +192,62 @@ Content-Type: application/json
   }
 }
 ```
+
+### 4. 抽奖数据统计查询 ⭐
+**获取所有抽奖记录（分页）**
+```
+GET /api/lottery-stats?action=list&limit=50&offset=0
+```
+
+**响应**
+```json
+{
+  "code": 0,
+  "message": "查询成功",
+  "data": {
+    "draws": [
+      {
+        "id": 1,
+        "root_message_id": "om_xxx",
+        "winner_id": "ou_xxx",
+        "participant_count": 15,
+        "chat_id": "oc_xxx",
+        "created_at": "2025-10-13T10:30:00.000Z"
+      }
+    ],
+    "count": 50,
+    "limit": 50,
+    "offset": 0
+  }
+}
+```
+
+**按群聊查询抽奖记录**
+```
+GET /api/lottery-stats?action=chat&chatId=oc_xxx&limit=20
+```
+
+**获取统计数据**
+```
+GET /api/lottery-stats?action=stats
+```
+
+**响应**
+```json
+{
+  "code": 0,
+  "message": "查询成功",
+  "data": {
+    "totalDraws": 100,
+    "totalChats": 10,
+    "uniqueWinners": 50,
+    "totalParticipants": 1500,
+    "avgParticipants": 15.0
+  }
+}
+```
+
+**注意**：数据统计查询功能需要配置 Neon Postgres 数据库，使用内存存储时无法使用此功能。
 
 ## 🔐 飞书开放平台配置
 
@@ -278,34 +343,42 @@ vercel logs --follow
 
 ## 💾 持久化存储
 
-### Vercel KV（推荐）
+### Neon Postgres（推荐）⭐
 
-项目默认集成 Vercel KV 进行持久化存储，用于记录开奖信息防止重复开奖。
+项目默认集成 Neon Postgres 数据库进行持久化存储，用于记录开奖信息防止重复开奖，并支持数据查询和分析。
 
 **免费额度**：
-- 存储空间：256 MB
-- 请求次数：100,000 次/月
+- 存储空间：0.5 GB
+- 计算时间：191.9 小时/月
 - 足够小型应用使用
 
 **存储的数据**：
-- 抽奖记录 Key: `lottery:drawn:{root_message_id}`
-- 记录内容：中奖用户 ID、抽奖时间、参与人数
+- 抽奖记录表 `lottery_draws`
+- 字段：根消息 ID、中奖用户 ID、参与人数、群聊 ID、抽奖时间等
+
+**数据分析功能**：
+- 查询所有抽奖记录（支持分页）
+- 按群聊 ID 查询抽奖记录
+- 统计总抽奖次数、参与人数、中奖用户数等
 
 **自动降级**：
-如果未配置 Vercel KV，系统会自动使用内存存储（数据不持久化），但不影响基本功能。
+如果未配置 Neon 数据库，系统会自动使用内存存储（数据不持久化），但不影响基本功能。
 
 ## 📝 注意事项
 
-1. **持久化存储**: 强烈建议配置 Vercel KV 以持久化抽奖记录，否则每次部署后数据会丢失
+1. **持久化存储**: 强烈建议配置 Neon Postgres 数据库以持久化抽奖记录，否则每次部署后数据会丢失
 2. **冷启动**: Serverless Functions 可能存在冷启动延迟（首次请求较慢）
 3. **超时限制**: Vercel 免费版函数超时时间为 10 秒，Pro 版为 60 秒
 4. **并发限制**: 注意 Vercel 的并发请求限制
+5. **数据库自动初始化**: 首次运行时会自动创建数据库表，无需手动执行 SQL
 
 ## 🔗 相关链接
 
 - [Vercel 文档](https://vercel.com/docs)
 - [飞书开放平台](https://open.feishu.cn/document)
 - [@larksuiteoapi/node-sdk](https://www.npmjs.com/package/@larksuiteoapi/node-sdk)
+- [Neon Postgres](https://neon.tech/)
+- [@neondatabase/serverless](https://www.npmjs.com/package/@neondatabase/serverless)
 
 ## 📄 许可证
 
