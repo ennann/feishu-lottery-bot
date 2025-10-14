@@ -58,6 +58,7 @@ module.exports = async (req, res) => {
         // 1. 新格式: { schema: "2.0", header: {...}, event: {...} }
         // 2. 旧格式: { event: { header: {...}, event: {...} } }
         const eventType = req.body?.header?.event_type || req.body?.event?.header?.event_type;
+        const tenantKey = req.body?.header?.tenant_key || req.body?.event?.header?.tenant_key;
         const eventId = req.body?.header?.event_id || req.body?.event?.header?.event_id;
         const appId = req.body?.header?.app_id || req.body?.event?.header?.app_id;
         
@@ -88,6 +89,7 @@ module.exports = async (req, res) => {
             logger.info(`根消息ID: ${message?.root_id || '(无)'}`);
             logger.info(`发送者: ${sender?.sender_id?.open_id}`);
             logger.info(`消息内容: ${message?.content}`);
+            logger.info(`租户Key: ${tenantKey || '(无)'}`);
 
             // 立即返回 200 响应，满足飞书 3 秒内响应的要求
             res.status(200).json({
@@ -110,9 +112,15 @@ module.exports = async (req, res) => {
                         logger
                     };
 
+                    // 将 tenantKey 添加到请求体中
+                    const enrichedBody = {
+                        ...req.body,
+                        tenantKey: tenantKey
+                    };
+
                     // 执行抽奖逻辑
                     const result = await lotteryDrawHandler(
-                        req.body,
+                        enrichedBody,
                         { getTokenFn: getFeishuConfig, redis: storage },
                         dependencies
                     );
