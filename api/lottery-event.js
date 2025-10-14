@@ -91,16 +91,12 @@ module.exports = async (req, res) => {
             logger.info(`消息内容: ${message?.content}`);
             logger.info(`租户Key: ${tenantKey || '(无)'}`);
 
-            // 立即返回 200 响应，满足飞书 3 秒内响应的要求
-            res.status(200).json({
-                code: 0,
-                message: '事件已接收'
-            });
-
-            // 异步执行抽奖逻辑（不阻塞响应）
-            setImmediate(async () => {
+            // 使用 Promise.race 策略：
+            // 1. 如果抽奖逻辑在 2.5 秒内完成，返回实际结果
+            // 2. 如果超过 2.5 秒，先返回 200，但继续执行抽奖
+            const lotteryPromise = (async () => {
                 try {
-                    logger.info('>>> 开始异步处理抽奖逻辑');
+                    logger.info('>>> 开始处理抽奖逻辑');
 
                     // 初始化依赖（使用 Neon Postgres 持久化存储）
                     const storage = await createStorage();
@@ -126,12 +122,43 @@ module.exports = async (req, res) => {
                     );
 
                     logger.info('>>> 抽奖逻辑执行完成', result);
+                    return result;
                 } catch (error) {
-                    logger.error('异步处理抽奖逻辑失败', error);
+                    logger.error('处理抽奖逻辑失败', error);
+                    throw error;
                 }
+            })();
+
+            // 创建超时 Promise（2.5 秒）
+            const timeoutPromise = new Promise((resolve) => {
+                setTimeout(() => {
+                    logger.warn('抽奖逻辑执行时间较长，先返回响应');
+                    resolve({ timeout: true });
+                }, 2500);
             });
 
-            // 注意：这里已经返回了响应，不需要再次返回
+            // 竞速：如果 2.5 秒内完成就返回结果，否则返回通用响应
+            const raceResult = await Promise.race([lotteryPromise, timeoutPromise]);
+
+            if (raceResult.timeout) {
+                // 超时情况：返回通用响应，但抽奖逻辑会继续执行
+                res.status(200).json({
+                    code: 0,
+                    message: '事件已接收，正在处理中'
+                });
+
+                // 等待抽奖逻辑完成（不阻塞响应，但保持函数存活）
+                try {
+                    await lotteryPromise;
+                    logger.info('>>> 延迟执行的抽奖逻辑已完成');
+                } catch (error) {
+                    logger.error('延迟执行的抽奖逻辑失败', error);
+                }
+            } else {
+                // 快速完成：返回实际结果
+                return res.status(200).json(raceResult);
+            }
+
             return;
         }
 
