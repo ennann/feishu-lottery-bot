@@ -89,24 +89,42 @@ module.exports = async (req, res) => {
             logger.info(`发送者: ${sender?.sender_id?.open_id}`);
             logger.info(`消息内容: ${message?.content}`);
 
-            // 初始化依赖（使用 Neon Postgres 持久化存储）
-            const storage = await createStorage();
-            const client = await initLarkClient(getFeishuConfig);
+            // 立即返回 200 响应，满足飞书 3 秒内响应的要求
+            res.status(200).json({
+                code: 0,
+                message: '事件已接收'
+            });
 
-            const dependencies = {
-                client,
-                redis: storage,  // 使用 redis 别名保持向后兼容
-                logger
-            };
+            // 异步执行抽奖逻辑（不阻塞响应）
+            setImmediate(async () => {
+                try {
+                    logger.info('>>> 开始异步处理抽奖逻辑');
 
-            // 执行抽奖逻辑
-            const result = await lotteryDrawHandler(
-                req.body,
-                { getTokenFn: getFeishuConfig, redis: storage },
-                dependencies
-            );
+                    // 初始化依赖（使用 Neon Postgres 持久化存储）
+                    const storage = await createStorage();
+                    const client = await initLarkClient(getFeishuConfig);
 
-            return res.status(200).json(result);
+                    const dependencies = {
+                        client,
+                        redis: storage,  // 使用 redis 别名保持向后兼容
+                        logger
+                    };
+
+                    // 执行抽奖逻辑
+                    const result = await lotteryDrawHandler(
+                        req.body,
+                        { getTokenFn: getFeishuConfig, redis: storage },
+                        dependencies
+                    );
+
+                    logger.info('>>> 抽奖逻辑执行完成', result);
+                } catch (error) {
+                    logger.error('异步处理抽奖逻辑失败', error);
+                }
+            });
+
+            // 注意：这里已经返回了响应，不需要再次返回
+            return;
         }
 
         // 其他事件类型暂不处理
