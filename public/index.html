@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>抽奖助手机器人 · 即刻拥有 @Tim 同款</title>
-  <meta name="description" content="基于飞书开放平台与 aPaaS 的智能抽奖机器人：点赞参与，一句"开奖"即抽奖。自动去重、公平随机、防重复开奖、群内即时通知，轻量高效，适合公司群活动与直播互动。" />
+  <title>飞书抽奖机器人 · 即刻拥有 @Tim 同款</title>
+  <meta name="description" content="基于飞书开放平台的智能抽奖机器人：点赞参与，一句"开奖"即抽奖。自动去重、公平随机、防重复开奖、群内即时通知，轻量高效，适合公司群活动与直播互动。" />
   <link rel="icon" type="image/png" href="https://lf-package-cn.feishucdn.com/obj/feishu-static/lark/open/website/share-logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,19 +13,19 @@
 </head>
 <body>
   <!-- 背景粒子层 -->
-  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <!-- 背景粒子层 -->
+  <div class="bg"></div>
 
   <!-- 顶部导航（简洁） -->
   <header class="site-header">
     <div class="container header-inner">
       <div class="brand">
         <img src="https://lf-package-cn.feishucdn.com/obj/feishu-static/lark/open/website/share-logo.png" alt="抽奖助手" class="brand-logo" />
-        <span class="brand-text">抽奖助手机器人</span>
+        <span class="brand-text">飞书抽奖机器人</span>
       </div>
       <nav class="nav">
         <a href="#features">特性</a>
         <a href="#how-it-works">使用方法</a>
-        <a href="#cta" class="btn btn-small">申请使用</a>
       </nav>
     </div>
   </header>
@@ -36,18 +36,18 @@
     <div class="container hero-inner glass">
       <div class="hero-content">
         <h1>即刻拥有 <span class="highlight">@Tim</span> 同款抽奖机器人</h1>
-        <p class="sub">点赞参与，一句「<strong>开奖</strong>」即抽奖。基于飞书开放平台与 aPaaS，轻量高效，适合群活动、直播互动与企业内福利抽奖。</p>
+        <p class="sub">点赞参与，一句「<strong>开奖</strong>」即抽奖。基于飞书开放平台，轻量高效，适合群活动、直播互动与企业内福利抽奖。</p>
         <div class="hero-ctas">
-          <a id="applyBtn" href="#cta" class="btn btn-primary">申请使用</a>
+          <a id="applyBtn" href="#cta" class="btn btn-primary">部署使用</a>
           <a href="#how-it-works" class="btn btn-ghost">查看使用方法</a>
           <button id="copyBtn" class="btn btn-copy" aria-label="复制开奖指令">复制「开奖」</button>
         </div>
         <div class="credibility">
-          <span class="badge">影视飓风 @Tim 同款 · 罗永浩《十字路口》访谈提及</span>
+          <a href="https://www.bilibili.com/video/BV1B5xkzPEhx/" target="_blank" rel="noopener noreferrer" class="badge badge-link">影视飓风 @Tim 同款 · 罗永浩《十字路口》访谈提及</a>
         </div>
       </div>
       <div class="hero-art">
-        <img id="heroImg" src="./hero.jpg" alt="智能抽奖机器人主题英雄图" />
+        <video id="heroVideo" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/logpfvhog/feishu/ms-feishu-bot.mp4" autoplay loop muted playsinline></video>
         <div class="glow"></div>
       </div>
     </div>
@@ -62,12 +62,21 @@
       <div class="features-grid">
         <div class="feature-card glass">
           <div class="icon">
-            <!-- 收集参与者 -->
+            <!-- 双模式抽奖 -->
             <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4Z"/><path d="M6 20a6 6 0 0 1 12 0"/></svg>
+              <path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg>
           </div>
-          <h3>自动收集参与者</h3>
-          <p>基于飞书消息点赞反应（Reaction）自动统计参与用户，无需表单报名。</p>
+          <h3>双模式抽奖</h3>
+          <p>支持点赞模式和区间模式，点赞参与或时间段内发言均可参与抽奖。</p>
+        </div>
+        <div class="feature-card glass">
+          <div class="icon">
+            <!-- 权限校验 -->
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3>权限校验</h3>
+          <p>只有消息发布人才能触发抽奖，必须@机器人才能触发，避免误操作。</p>
         </div>
         <div class="feature-card glass">
           <div class="icon">
@@ -75,8 +84,8 @@
             <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
               <path d="M9 11l3 3 7-7"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
           </div>
-          <h3>智能去重</h3>
-          <p>自动过滤不同表情的重复参与者，确保每位用户只计一次。</p>
+          <h3>防重复中奖</h3>
+          <p>自动排除历史中奖用户，同一消息可多次抽奖，确保公平。</p>
         </div>
         <div class="feature-card glass">
           <div class="icon">
@@ -89,21 +98,12 @@
         </div>
         <div class="feature-card glass">
           <div class="icon">
-            <!-- 防重复开奖 -->
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M21 12a9 9 0 1 1-9-9"/><path d="M3 3l6 6"/></svg>
-          </div>
-          <h3>防重复开奖</h3>
-          <p>同一条消息仅允许开奖一次，避免重复抽奖与争议。</p>
-        </div>
-        <div class="feature-card glass">
-          <div class="icon">
             <!-- 即时通知 -->
             <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
               <path d="M12 22c1.1 0 2-.9 2-2H10c0 1.1.9 2 2 2Z"/><path d="M18 16v-5a6 6 0 0 0-12 0v5"/><path d="M5 16h14"/></svg>
           </div>
-          <h3>群内即时通知</h3>
-          <p>开奖后自动在群聊@中奖用户，结果当场可见，提升参与氛围。</p>
+          <h3>详细统计</h3>
+          <p>显示参与人数、点赞数或消息数、时间范围等详细统计信息。</p>
         </div>
       </div>
     </div>
@@ -117,27 +117,27 @@
         <div class="step glass">
           <div class="step-index">01</div>
           <div class="step-content">
-            <h4>点赞参与</h4>
-            <p>在抽奖活动消息下，点击点赞等表情参与。机器人会自动收集参与名单。</p>
+            <h4>选择参与方式</h4>
+            <p><strong>点赞模式：</strong>在消息下点赞参与。<strong>区间模式：</strong>在群内发言参与（不含回复）。</p>
           </div>
         </div>
         <div class="step glass">
           <div class="step-index">02</div>
           <div class="step-content">
-            <h4>回复并发送「开奖」</h4>
-            <p>必须回复机器人，并发送「开奖」两个字触发抽奖；同一消息仅识别第一次触发。</p>
+            <h4>@机器人并触发</h4>
+            <p>在消息下回复@机器人，发送「开奖/抽奖」（点赞模式）或「区间开奖/区间抽奖」（区间模式）。</p>
           </div>
         </div>
         <div class="step glass">
           <div class="step-index">03</div>
           <div class="step-content">
             <h4>即时开奖与公告</h4>
-            <p>机器人公平随机抽取中奖者，并在群内自动公告与@提醒。</p>
+            <p>机器人公平随机抽取中奖者，显示详细统计，在群内自动@中奖用户。</p>
           </div>
         </div>
       </div>
       <div class="tip glass">
-        <strong>提示：</strong>如果没有回复任何消息，将不会响应；如提示无权限，可在内部申请开通。
+        <strong>提示：</strong>只有消息发布人才能触发抽奖；必须@机器人；支持同一消息多次抽奖，自动排除历史中奖用户。
       </div>
     </div>
   </section>
@@ -147,11 +147,10 @@
     <div class="container cta-inner glass">
       <div class="cta-text">
         <h3>准备把抽奖变得又快又好玩吗？</h3>
-        <p>现在就把抽奖助手机器人接入你的飞书群聊，轻松组织福利抽奖与互动活动。</p>
+        <p>现在就把飞书抽奖机器人部署到你的企业内，轻松组织福利抽奖与互动活动吧！</p>
       </div>
       <div class="cta-actions">
-        <a href="#how-it-works" class="btn btn-primary">查看使用方法</a>
-        <button id="copyBtn2" class="btn btn-ghost">复制「开奖」</button>
+        <a href="https://github.com/ennann/feishu-lottery-bot" target="_blank" rel="noopener noreferrer" class="btn btn-primary">前往项目地址</a>
       </div>
     </div>
   </section>
@@ -161,18 +160,12 @@
       <div class="footer-grid">
         <div>
           <div class="brand">
-            <span class="logo-dot"></span>
-            <span class="brand-text">抽奖助手机器人</span>
+            <img src="https://lf-package-cn.feishucdn.com/obj/feishu-static/lark/open/website/share-logo.png" alt="抽奖助手" class="brand-logo" />
+            <span class="brand-text">飞书抽奖机器人</span>
           </div>
-          <p class="footnote">基于飞书开放平台与 aPaaS · 企业内群抽奖轻量方案</p>
-        </div>
-        <div class="footer-links">
-          <a href="#features">特性</a>
-          <a href="#how-it-works">使用方法</a>
-          <a href="#hero">回到顶部</a>
         </div>
       </div>
-      <div class="legal">© 2025 抽奖助手机器人 · 保留所有权利</div>
+      <div class="legal">© 2025 飞书抽奖机器人 · 保留所有权利</div>
     </div>
   </footer>
 
