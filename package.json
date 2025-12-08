@@ -24,6 +24,9 @@
     "@vercel/kv": "^3.0.0"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@vercel/node": "^5.5.15",
+    "typescript": "^5.9.3",
     "vercel": "^37.0.0"
   },
   "engines": {
