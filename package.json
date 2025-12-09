@@ -1,35 +1,35 @@
 {
-  "name": "feishu-lottery-assistant-vercel",
-  "version": "1.0.0",
-  "description": "飞书抽奖助手 - Vercel Serverless Functions 部署版本",
-  "main": "api/index.js",
-  "scripts": {
-    "dev": "vercel dev",
-    "deploy": "vercel --prod",
-    "deploy:preview": "vercel"
-  },
-  "keywords": [
-    "feishu",
-    "lark",
-    "lottery",
-    "serverless",
-    "vercel",
-    "functional-programming"
-  ],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "@larksuiteoapi/node-sdk": "^1.55.0",
-    "@neondatabase/serverless": "^1.0.2",
-    "@vercel/kv": "^3.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^24.10.1",
-    "@vercel/node": "^5.5.15",
-    "typescript": "^5.9.3",
-    "vercel": "^37.0.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+    "name": "feishu-lottery-assistant-vercel",
+    "version": "1.0.0",
+    "description": "飞书抽奖助手 - Vercel Serverless Functions 部署版本",
+    "main": "api/index.ts",
+    "scripts": {
+        "dev": "vercel dev",
+        "deploy": "vercel --prod",
+        "deploy:preview": "vercel"
+    },
+    "keywords": [
+        "feishu",
+        "lark",
+        "lottery",
+        "serverless",
+        "vercel",
+        "functional-programming"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "@larksuiteoapi/node-sdk": "^1.55.0",
+        "@neondatabase/serverless": "^1.0.2",
+        "@vercel/kv": "^3.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^24.10.1",
+        "@vercel/node": "^5.5.15",
+        "typescript": "^5.9.3",
+        "vercel": "^37.0.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
 }
